@@ -39,6 +39,10 @@ class World {
 
     bool done() { return done_; }
 
+    void set_gravity(double down) {
+      world_.SetGravity(b2Vec2(0.0, down));
+    }
+
   protected:
     b2World world_;
 

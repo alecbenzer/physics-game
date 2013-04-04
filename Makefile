@@ -5,6 +5,12 @@ includes = -I/home/alec/Downloads/Box2D_v2.2.1 -I/home/alec/Downloads/gtest-1.6.
 main: $(objects)
 	clang++ -g $(objects) $(libs) -o main
 
+tests: object_test world_test
+
+run_tests: tests
+	./object_test
+	./world_test
+
 main.o: main.cc
 	clang++ -c $(includes)  main.cc
 
