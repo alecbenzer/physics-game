@@ -1,3 +1,3 @@
 A simple physics game using Box2D. Classes used to interface with Box2D (ie World, Object) may be of use to others.
 
-Depends on SDL, OpenGL, Box2D, and gtest. The Makefile has explicit -L and -I directives to my Box2D installation -- these should be modified accordingly for other machines.
+Depends on SDL, OpenGL, Box2D, and gtest. The Makefile has explicit -L and -I directives specific to my Box2D installation -- these should be modified accordingly for other machines.
