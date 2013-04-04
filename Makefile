@@ -1,6 +1,6 @@
 objects = main.o world.o object.o
 libs = -L/home/alec/Downloads/Box2D_v2.2.1/Build/gmake/bin/Debug/ -lBox2D -lSDL -lGL -lGLU -lgtest
-includes = -I/home/alec/Downloads/Box2D_v2.2.1 -I/home/alec/Downloads/gtest-1.6.0/include
+includes = -I/home/alec/Downloads/Box2D_v2.2.1
 
 main: $(objects)
 	clang++ -g $(objects) $(libs) -o main
