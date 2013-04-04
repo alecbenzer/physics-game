@@ -42,6 +42,10 @@ class Object {
     b2BodyType body_type() const {
       return body_def_.type;
     }
+
+    b2Vec2 position() const {
+      return body_->GetPosition();
+    }
   private:
     DISALLOW_COPY_AND_ASSIGN(Object);
 
