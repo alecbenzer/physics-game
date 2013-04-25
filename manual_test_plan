@@ -1,0 +1,19 @@
+1. Press W/A/S/D. Ensure that the ship (smallest box on the screen) moves smoothly.
+
+2. Ensure the same behavior works with the arrow keys.
+
+3. Start moving in a direction, then let go of the corresponding button, and observe that you keep your momentum.
+
+4. Repeat 3, but after you let go, press the Q key (stabilize). Observe that your momentum decreases more rapidily.
+
+5. Move to the side of the larger box on the ground. Try and be far away from it, aim your mouse at it (ie, put your mouse between the ship and the other box), and click the left mouse button. Ensure nothing happens.
+
+6. Continuing from 5, ensuring the mouse button is still held down, move closer to the larger box. Observe that at some distance to the box, the box beings to move toward the ship.
+
+7. Continuing from 6, stop moving the ship, but keep the left mouse button down. The box should continue to move towards you.
+
+8. Continuing from 7, the box should stop moving towards you before it comes in contact with the ship.
+
+9. Once the box has stopped moving, ensure you are still holding the left mouse button, move the ship away from the larger box. Once you put some amount of distance between the ship and the box, the box should begin to move towards the ship again.
+
+10. Now, position yourself slightly above the box. Move your mouse between yourself and the box, and click the left mouse button. Observe that the larger box moves up, towards the ship.
