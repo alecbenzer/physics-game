@@ -1,9 +1,40 @@
 #include "world.h"
 
 #include <cstdio>
-#include <iostream>
 #include <GL/gl.h>
 #include <SDL/SDL_opengl.h>
+
+float RayCastCallback::ReportFixture(b2Fixture* fixture, const b2Vec2& point,
+                                     const b2Vec2& normal, float fraction) {
+    if (fixture->GetBody()->GetType() == b2_dynamicBody) {
+      body_ = fixture->GetBody();
+      point_ = point;
+      normal_ = normal;
+      return 0;
+    } else {
+     body_ = NULL;
+     return -1;
+    }
+}
+
+void ContactListener::PostSolve(b2Contact* contact,
+                                const b2ContactImpulse* impulse) {
+  Object* objA =
+    static_cast<Object*>(contact->GetFixtureA()->GetBody()->GetUserData());
+  Object* objB =
+    static_cast<Object*>(contact->GetFixtureB()->GetBody()->GetUserData());
+
+  if (objA == objB && objA != NULL) {
+    objA->HandleContact(contact, impulse);
+  } else {
+    if (objA != NULL) {
+     objA->HandleContact(contact, impulse);
+    }
+    if (objB != NULL) {
+      objB ->HandleContact(contact, impulse);
+    }
+  }
+}
 
 World::World()
     : window_width_(640),
@@ -20,9 +51,6 @@ World::World()
 }
 
 World::~World() {
-  for (int i = 0; i < objects_.size(); ++i) {
-    delete objects_[i];
-  }
 }
 
 void World::Init() {
@@ -45,11 +73,17 @@ void World::Init() {
   glEnable(GL_TEXTURE_2D);
 
   glLoadIdentity();
+
+  world_.SetContactListener(&contact_listener_);
 }
 
 void World::AddObject(Object* obj) {
   obj->Init(&world_);
   objects_.push_back(obj);
+}
+
+void World::ClearObjects() {
+  objects_.clear();
 }
 
 void World::Render() {
@@ -117,9 +151,12 @@ void World::UpdateViewport() {
 }
 
 void World::PerformRaycast(const b2Vec2& a, const b2Vec2& b) {
-  // cerr << "perform raycast from " << a.x << "," << a.y << " to " << b.x << "," << b.y << "\n";
   raycast_callback_.reset();
 
   b2Vec2 direction = (1/((b - a).Length())) * (b - a);
   world_.RayCast(&raycast_callback_, a, a + 8 * direction);
+}
+
+void World::Message(std::string msg) {
+  printf("%s\n", msg.c_str());
 }

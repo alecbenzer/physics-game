@@ -14,6 +14,8 @@ class Object {
 
   virtual void Step(b2World* world) {}
 
+  virtual void HandleContact(b2Contact* contact, const b2ContactImpulse* impulse) {}
+
  private:
   DISALLOW_COPY_AND_ASSIGN(Object);
 };

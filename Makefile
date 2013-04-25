@@ -1,8 +1,8 @@
-objects = world.o object.o drawing.o basic_object.o ship.o
-libs = -L/home/alec/Downloads/Box2D_v2.2.1/Build/gmake/bin/Debug/ -lBox2D -lSDL -lGL -lGLU -lgtest
-includes = -I/home/alec/Downloads/Box2D_v2.2.1
+objects = world.o object.o drawing.o basic_object.o ship.o level.o
+libs = -L/home/alecb/Downloads/Box2D_v2.2.1/Build/gmake/bin/Debug/ -lBox2D -lSDL -lGL -lGLU -lgtest -llua5.1
+includes = -I/home/alecb/Downloads/Box2D_v2.2.1
 
-main: main.o $(objects)
+main: main.o world.h level.h $(objects)
 	clang++ -g main.o $(objects) $(libs) -o main
 
 main.o: main.cc
@@ -22,6 +22,9 @@ basic_object.o: basic_object.cc basic_object.h object.h
 
 ship.o: ship.cc ship.h drawing.h
 	clang++ -g -c $(includes) ship.cc
+
+level.o: level.cc level.h basic_object.h ship.h
+	clang++ -g -c $(includes) level.cc
 
 
 tests: world_test

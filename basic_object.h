@@ -12,12 +12,7 @@ class BasicObject : public Object {
     body_def_.type = b2_dynamicBody;
   }
 
-  ~BasicObject() {
-    delete shape_;
-
-    b2World* world = body_->GetWorld();
-    world->DestroyBody(body_);
-  }
+  virtual ~BasicObject();
 
   void set_initial_position(double x, double y) {
     body_def_.position.x = x;
@@ -47,6 +42,10 @@ class BasicObject : public Object {
   virtual void Init(b2World* world);
   virtual void Render();
 
+  double health() { return health_; }
+
+  virtual void HandleContact(b2Contact* contact, const b2ContactImpulse* impulse);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BasicObject);
 
@@ -54,6 +53,8 @@ class BasicObject : public Object {
   b2BodyDef body_def_;
   b2FixtureDef fixture_def_;
   b2Shape* shape_;
+
+  double health_;
 };
 
 #endif  // _BASIC_OBJECT_H

@@ -2,7 +2,6 @@
 #define _WORLD_H
 
 #include <iostream>
-using std::cerr;
 
 #include <vector>
 #include <set>
@@ -14,21 +13,8 @@ class RayCastCallback : public b2RayCastCallback {
  public:
   RayCastCallback() : body_(NULL) {}
 
-  float ReportFixture(b2Fixture* fixture,
-                      const b2Vec2& point,
-                      const b2Vec2& normal,
-                      float fraction) {
-    cerr << "ReportFixture()\n";
-    if (fixture->GetBody()->GetType() == b2_dynamicBody) {
-      body_ = fixture->GetBody();
-      point_ = point;
-      normal_ = normal;
-      return 0;
-    } else {
-     body_ = NULL;
-     return -1;
-    }
-  }
+  float ReportFixture(b2Fixture* fixture, const b2Vec2& point,
+                      const b2Vec2& normal, float fraction);
 
   void reset() {
     body_ = NULL;
@@ -41,6 +27,11 @@ class RayCastCallback : public b2RayCastCallback {
   b2Body* body_;
   b2Vec2 point_;
   b2Vec2 normal_;
+};
+
+class ContactListener : public b2ContactListener {
+ public:
+  void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse);
 };
 
 class World {
@@ -70,12 +61,15 @@ class World {
   }
 
   void AddObject(Object* obj);
+  void ClearObjects();
 
   void Init();
   void Cleanup();
 
   void Step();
   void Render();
+
+  void Message(std::string msg);
 
   bool done() { return done_; }
 
@@ -125,6 +119,7 @@ class World {
   DISALLOW_COPY_AND_ASSIGN(World);
 
   RayCastCallback raycast_callback_;
+  ContactListener contact_listener_;
 
   void UpdateViewport();
 
