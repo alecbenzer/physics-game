@@ -1,79 +1,157 @@
 #ifndef _WORLD_H
 #define _WORLD_H
 
+#include <iostream>
+using std::cerr;
+
 #include <vector>
+#include <set>
+#include <SDL/SDL.h>
 #include "object.h"
 #include "help.h"
 
+class RayCastCallback : public b2RayCastCallback {
+ public:
+  RayCastCallback() : body_(NULL) {}
+
+  float ReportFixture(b2Fixture* fixture,
+                      const b2Vec2& point,
+                      const b2Vec2& normal,
+                      float fraction) {
+    cerr << "ReportFixture()\n";
+    if (fixture->GetBody()->GetType() == b2_dynamicBody) {
+      body_ = fixture->GetBody();
+      point_ = point;
+      normal_ = normal;
+      return 0;
+    } else {
+     body_ = NULL;
+     return -1;
+    }
+  }
+
+  void reset() {
+    body_ = NULL;
+  }
+
+  b2Body* body() { return body_; }
+  b2Vec2 point() { return point_; }
+  b2Vec2 normal() { return normal_; }
+
+  b2Body* body_;
+  b2Vec2 point_;
+  b2Vec2 normal_;
+};
+
 class World {
-  public:
-    World();
-    ~World();
+ public:
 
-    void SetScreenSize(int w, int h) {
-      window_width_ = w;
-      window_height_ = h;
-    }
+  World();
+  ~World();
 
-    void SetViewHeight(int view_height) {
-      view_height_ = view_height;
-    }
+  void SetScreenSize(int w, int h) {
+    window_width_ = w;
+    window_height_ = h;
+  }
 
-    void SetViewCenter(double x, double y) {
-      view_x_ = x;
-      view_y_ = y;
-    }
+  void SetViewHeight(int view_height) {
+    view_height_ = view_height;
+  }
 
-    void SetStepParams(double time_step, double velocity_iters, double position_iters) {
-      time_step_ = time_step;
-      velocity_iters_ = velocity_iters;
-      position_iters_ = position_iters;
-    }
+  void SetViewCenter(double x, double y) {
+    view_x_ = x;
+    view_y_ = y;
+  }
 
-    void Init();
+  void SetStepParams(double time_step, int velocity_iters, int position_iters) {
+    time_step_ = time_step;
+    velocity_iters_ = velocity_iters;
+    position_iters_ = position_iters;
+  }
 
-    Object* NewObject();
+  void AddObject(Object* obj);
 
-    void Step();
-    void Render();
+  void Init();
+  void Cleanup();
 
-    bool done() { return done_; }
+  void Step();
+  void Render();
 
-    void set_gravity(double down) {
-      world_.SetGravity(b2Vec2(0.0, down));
-    }
+  bool done() { return done_; }
 
-  protected:
-    b2World world_;
+  void set_gravity(double down) {
+    world_.SetGravity(b2Vec2(0.0, down));
+  }
 
-    // parameters for world simulation
-    double time_step_;
-    double velocity_iters_;
-    double position_iters_;
+  bool key_down(SDLKey key) {
+    return key_down_.find(key) != key_down_.end();
+  }
 
-  private:
-    DISALLOW_COPY_AND_ASSIGN(World);
+  bool button_down(uint8 button) {
+    return button_down_.find(button) != button_down_.end();
+  }
 
-    void UpdateViewport();
+  double mouse_x() {
+    return mouse_x_;
+  }
 
-    // pixel dimmensions of the window we're displaying
-    int window_width_;
-    int window_height_;
+  double mouse_y() {
+    return mouse_y_;
+  }
 
-    // the height (in Box2D units) that the window's height should represent
-    double view_height_;
+  b2Vec2 mouse_position() {
+    return b2Vec2(mouse_x_, mouse_y_);
+  }
 
-    // The width (in Box2D units) that the window's width represents. It's
-    // calculated based on view_height_.
-    double view_width_;
+  void PerformRaycast(const b2Vec2& a, const b2Vec2& b);
 
-    // center (in Box2D coordinates) of the rendering view
-    double view_x_;
-    double view_y_;
+  b2Body* raycast_body() {
+    return raycast_callback_.body();
+  }
 
-    bool done_;
+  b2Vec2 raycast_point() {
+    return raycast_callback_.point();
+  }
 
-    std::vector<Object*> objects_;
+ protected:
+  b2World world_;
+
+  // parameters for world simulation
+  double time_step_;
+  int velocity_iters_;
+  int position_iters_;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(World);
+
+  RayCastCallback raycast_callback_;
+
+  void UpdateViewport();
+
+  // pixel dimmensions of the window we're displaying
+  int window_width_;
+  int window_height_;
+
+  // the height (in Box2D units) that the window's height should represent
+  double view_height_;
+
+  // The width (in Box2D units) that the window's width represents. It's
+  // calculated based on view_height_.
+  double view_width_;
+
+  // center (in Box2D coordinates) of the rendering view
+  double view_x_;
+  double view_y_;
+
+  bool done_;
+
+  std::vector<Object*> objects_;
+
+  std::set<SDLKey> key_down_;
+
+  std::set<uint8> button_down_;
+  double mouse_x_;
+  double mouse_y_;
 };
 
 #endif  // _WORLD_H

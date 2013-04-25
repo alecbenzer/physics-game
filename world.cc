@@ -1,8 +1,8 @@
 #include "world.h"
 
 #include <cstdio>
+#include <iostream>
 #include <GL/gl.h>
-#include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 
 World::World()
@@ -47,10 +47,9 @@ void World::Init() {
   glLoadIdentity();
 }
 
-Object* World::NewObject() {
-  Object* obj = new Object(&world_);
+void World::AddObject(Object* obj) {
+  obj->Init(&world_);
   objects_.push_back(obj);
-  return obj;
 }
 
 void World::Render() {
@@ -76,10 +75,28 @@ void World::Step() {
                        SDL_OPENGL | SDL_GL_DOUBLEBUFFER);
       glViewport(0, 0, window_width_, window_height_);
       UpdateViewport();
+    } else if (event.type == SDL_KEYDOWN) {
+      key_down_.insert(event.key.keysym.sym);
+    } else if (event.type == SDL_KEYUP) {
+      key_down_.erase(event.key.keysym.sym);
+    } else if (event.type == SDL_MOUSEMOTION) {
+      double a = (1.0 * event.motion.x / window_width_ - 0.5) * 2.0;
+      double b = (1.0 * event.motion.y / window_height_ - 0.5) * 2.0;
+      mouse_x_ = view_x_ + a * (view_width_ / 2.0);
+      mouse_y_ = view_y_ + b * (view_height_ / 2.0);
+    } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+      button_down_.insert(event.button.button);
+    } else if (event.type == SDL_MOUSEBUTTONUP) {
+      button_down_.erase(event.button.button);
     }
   }
+  
 
   world_.Step(time_step_, velocity_iters_, position_iters_);
+
+  for (int i = 0; i < objects_.size(); ++i) {
+    objects_[i]->Step(&world_);
+  }
 }
 
 void World::UpdateViewport() {
@@ -97,4 +114,12 @@ void World::UpdateViewport() {
   glLoadIdentity();
   gluOrtho2D(left, right, bottom, top);
   glMatrixMode(GL_MODELVIEW);
+}
+
+void World::PerformRaycast(const b2Vec2& a, const b2Vec2& b) {
+  // cerr << "perform raycast from " << a.x << "," << a.y << " to " << b.x << "," << b.y << "\n";
+  raycast_callback_.reset();
+
+  b2Vec2 direction = (1/((b - a).Length())) * (b - a);
+  world_.RayCast(&raycast_callback_, a, a + 8 * direction);
 }

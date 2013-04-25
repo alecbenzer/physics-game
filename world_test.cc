@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "world.h"
-#include "object.h"
+#include "basic_object.h"
 
 #include <Box2D/Box2D.h>
 
@@ -15,53 +15,55 @@ class WorldStub : public World {
 
 class WorldTest : public ::testing::Test {
  protected:
-  Object* TestObject() {
-    Object* obj = world.NewObject();
-    obj->set_initial_position(0, 0);
+  BasicObject* TestObject() {
+    BasicObject* obj = new BasicObject();
+    obj->set_initial_position(0.0, 0.0);
     obj->set_box_shape(1, 1);
+
     return obj;
   }
 
   void StepALot() {
-    for(int i = 0; i < 100; ++i) world.Step();
+    for (int i = 0; i < 100; ++i) world.Step();
   }
 
   WorldStub world;
+  b2BodyDef bodyDef;
 };
 
 TEST_F(WorldTest, ObjectMoves) {
-  Object* obj = TestObject();
-  obj->set_dynamic();
-  obj->Init();
+  BasicObject* obj = TestObject();
+  obj->set_dyanmic();
+  world.AddObject(obj);
 
-  b2Vec2 old_position = obj->position();
+  b2Vec2 old_position = obj->body()->GetPosition();
   StepALot();
 
   // operator != undefined for b2Vec2
-  EXPECT_FALSE(old_position == obj->position());
+  EXPECT_FALSE(old_position == obj->body()->GetPosition());
 }
 
 TEST_F(WorldTest, StaticObjectDoesntMove) {
-  Object* obj = TestObject();
+  BasicObject* obj = TestObject();
   obj->set_static();
-  obj->Init();
+  world.AddObject(obj);
 
-  b2Vec2 old_position = obj->position();
+  b2Vec2 old_position = obj->body()->GetPosition();
   StepALot();
 
-  EXPECT_EQ(old_position, obj->position());
+  EXPECT_EQ(old_position, obj->body()->GetPosition());
 }
 
 TEST_F(WorldTest, DisableGravity) {
-  Object* obj = TestObject();
-  obj->set_dynamic();
-  obj->Init();
+  BasicObject* obj = TestObject();
+  obj->set_dyanmic();
+  world.AddObject(obj);
 
   world.set_gravity(0.0);  // disable gravity
-  b2Vec2 old_position = obj->position();
+  b2Vec2 old_position = obj->body()->GetPosition();
   StepALot();
 
-  EXPECT_EQ(old_position, obj->position());
+  EXPECT_EQ(old_position, obj->body()->GetPosition());
 }
 
 }  // namespace

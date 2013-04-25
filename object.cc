@@ -2,21 +2,11 @@
 
 #include <GL/gl.h>
 
-const double kPi = 3.14159265358979;
-const double kRadsToDegs = 180.0 / kPi;
+// no-op?
 
-Object::Object(b2World* world) : world_(world), body_(NULL) {
-  body_def_.type = b2_dynamicBody;
-}
-
-Object::~Object() {
-  if (body_ != NULL) {
-    world_->DestroyBody(body_);
-  }
-}
-
-void Object::Init() {
-  body_ = world_->CreateBody(&body_def_);
+/* void Object::Init(b2BodyDef body_def) {
+  body_def_ = body_def;
+  body_ = world_->CreateBody(&body_def);
 
   fixture_def_.shape = &shape_;
   fixture_def_.density = 1.0;
@@ -38,4 +28,4 @@ void Object::Render() {
     glVertex2f(v.x, v.y);
   }
   glEnd();
-}
+} */
