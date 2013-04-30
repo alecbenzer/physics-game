@@ -1,6 +1,6 @@
 objects = world.o object.o drawing.o basic_object.o ship.o level.o
-libs = -L/home/alecb/Downloads/Box2D_v2.2.1/Build/gmake/bin/Debug/ -lBox2D -lSDL -lGL -lGLU -lgtest -llua5.1
-includes = -I/home/alecb/Downloads/Box2D_v2.2.1
+libs = -L/home/alec/Downloads/Box2D_v2.2.1/Build/gmake/bin/Debug/ -lBox2D -lSDL -lGL -lGLU -lgtest -llua5.1
+includes = -I/home/alec/Downloads/Box2D_v2.2.1
 
 main: main.o world.h level.h $(objects)
 	clang++ -g main.o $(objects) $(libs) -o main
@@ -37,7 +37,6 @@ world_test.o: world_test.cc world.h object.h
 
 world_test: world_test.o world.o object.o
 	clang++ -g world_test.o $(objects) $(libs) -o world_test
-
 
 .PHONY: clean
 clean:
